@@ -165,7 +165,7 @@ export default function Navbar({ onNavigate, currentSection }: NavbarProps) {
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-700">
                   {user.first_name || user.username}
-                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded">Supervisor</span>}
+                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-slate-100 text-slate-700 rounded font-medium">Admin</span>}
                 </span>
                 <button
                   onClick={() => { logout(); onNavigate('home'); }}
@@ -316,7 +316,7 @@ export default function Navbar({ onNavigate, currentSection }: NavbarProps) {
               <>
                 <div className="px-3 py-2 text-sm text-gray-600">
                   Logged in as {user.first_name || user.username}
-                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded">Supervisor</span>}
+                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-slate-100 text-slate-700 rounded font-medium">Admin</span>}
                 </div>
                 <button
                   onClick={() => { logout(); onNavigate('home'); setIsOpen(false); }}

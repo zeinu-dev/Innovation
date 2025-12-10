@@ -12,12 +12,12 @@ import RegisterPage from './pages/RegisterPage';
 import InnovationSubmitPage from './pages/InnovationSubmitPage';
 import InnovationEditPage from './pages/InnovationEditPage';
 import InnovatorDashboard from './pages/InnovatorDashboard';
-import SupervisorReview from './pages/SupervisorReview';
+import AdminPanel from './pages/AdminPanel';
 import { useAuth } from './contexts/AuthContext';
 
 function App() {
   const [currentSection, setCurrentSection] = useState('home');
-  // legacy modal removed
+  const { user } = useAuth();
 
   const handleNavigate = (section: string) => {
     setCurrentSection(section);
@@ -25,10 +25,23 @@ function App() {
   };
 
   const handleSubmitClick = () => {
-    // if user logged in -> go to dashboard, otherwise go to login
-    const authRaw = localStorage.getItem('auth_user');
-    if (authRaw) setCurrentSection('dashboard');
-    else setCurrentSection('login');
+    if (user) {
+      if (user.is_staff) {
+        setCurrentSection('admin');
+      } else {
+        setCurrentSection('dashboard');
+      }
+    } else {
+      setCurrentSection('login');
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    if (user?.is_staff) {
+      setCurrentSection('admin');
+    } else {
+      setCurrentSection('dashboard');
+    }
   };
 
   const renderContent = () => {
@@ -77,12 +90,12 @@ function App() {
         return <InnovatorDashboard onNavigate={handleNavigate} />;
       case 'submit-innovation':
         return <InnovationSubmitPage onClose={() => setCurrentSection('dashboard')} />;
-      case 'supervisor':
-        return <SupervisorReview />;
+      case 'admin':
+        return <AdminPanel />;
       case 'login':
-        return <LoginPage onSuccess={() => setCurrentSection('dashboard')} />;
+        return <LoginPage onSuccess={handleLoginSuccess} />;
       case 'register':
-        return <RegisterPage onSuccess={() => setCurrentSection('dashboard')} />;
+        return <RegisterPage onSuccess={handleLoginSuccess} />;
       default:
         return (
           <>
