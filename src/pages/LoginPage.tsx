@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function LoginPage({ onSuccess }: { onSuccess?: () => void }) {
+export default function LoginPage({ onSuccess }: { onSuccess?: (user: any) => void }) {
   const { t } = useLanguage();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
@@ -36,8 +36,8 @@ export default function LoginPage({ onSuccess }: { onSuccess?: () => void }) {
     setError('');
     setFieldErrors({});
     try {
-      await login({ username, password });
-      if (onSuccess) onSuccess();
+      const userData = await login({ username, password });
+      if (onSuccess) onSuccess(userData);
     } catch (err: any) {
       if (err && typeof err === 'object' && !('message' in err)) {
         setFieldErrors(err);

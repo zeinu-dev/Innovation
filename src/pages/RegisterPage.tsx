@@ -3,7 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import React from 'react';
 
-export default function RegisterPage({ onSuccess }: { onSuccess?: () => void }) {
+export default function RegisterPage({ onSuccess }: { onSuccess?: (user: any) => void }) {
   const { t } = useLanguage();
   const { register } = useAuth();
   const [username, setUsername] = useState('');
@@ -21,8 +21,8 @@ export default function RegisterPage({ onSuccess }: { onSuccess?: () => void }) 
     setError('');
     setFieldErrors({});
     try {
-      await register({ username, email, password, first_name: firstName, last_name: lastName });
-      if (onSuccess) onSuccess();
+      const userData = await register({ username, email, password, first_name: firstName, last_name: lastName });
+      if (onSuccess) onSuccess(userData);
     } catch (err: any) {
       if (err && typeof err === 'object' && !('message' in err)) {
         setFieldErrors(err);

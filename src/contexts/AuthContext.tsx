@@ -6,13 +6,14 @@ type User = {
   email?: string;
   first_name?: string;
   last_name?: string;
+  is_staff?: boolean;
 };
 
 interface AuthContextValue {
   user: User | null;
   accessToken: string | null;
-  login: (credentials: { username: string; password: string }) => Promise<void>;
-  register: (payload: { username: string; email: string; password: string; first_name?: string; last_name?: string }) => Promise<void>;
+  login: (credentials: { username: string; password: string }) => Promise<User>;
+  register: (payload: { username: string; email: string; password: string; first_name?: string; last_name?: string }) => Promise<User>;
   logout: () => void;
 }
 
@@ -68,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(data.user);
     setAccessToken(data.access);
     localStorage.setItem('refresh_token', data.refresh);
+    return data.user;
   };
 
   const register = async (payload: { username: string; email: string; password: string; first_name?: string; last_name?: string }) => {
@@ -95,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(data.user);
     setAccessToken(data.access);
     localStorage.setItem('refresh_token', data.refresh);
+    return data.user;
   };
 
   const logout = () => {

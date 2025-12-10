@@ -36,8 +36,8 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = () => {
-    if (user?.is_staff) {
+  const handleLoginSuccess = (userData: any) => {
+    if (userData?.is_staff) {
       setCurrentSection('admin');
     } else {
       setCurrentSection('dashboard');
