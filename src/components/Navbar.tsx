@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
@@ -11,6 +12,7 @@ export default function Navbar({ onNavigate, currentSection }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { t, lang, setLang } = useLanguage();
+  const { user, logout } = useAuth();
 
   const toggleDropdown = (dropdown: string) => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
@@ -159,47 +161,36 @@ export default function Navbar({ onNavigate, currentSection }: NavbarProps) {
               </div>
             </div>
 
-            {/* show login/register when not logged in; show user+logout when logged in */}
-            {(() => {
-              try {
-                const auth = localStorage.getItem('auth_user');
-                const user = auth ? JSON.parse(auth) : null;
-                if (user) {
-                  return (
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => onNavigate('dashboard')} className="px-3 py-2 rounded-md text-sm bg-gray-50 hover:bg-gray-100">Dashboard</button>
-                      {user.is_staff && (
-                        <button onClick={() => onNavigate('supervisor')} className="px-3 py-2 rounded-md text-sm bg-yellow-50 hover:bg-yellow-100">Supervisor</button>
-                      )}
-                      <span className="text-sm text-gray-700">{user.first_name || user.username}</span>
-                      <button
-                        onClick={() => { localStorage.removeItem('auth_user'); localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); window.location.reload(); }}
-                        className="px-3 py-2 ml-2 rounded-md text-sm bg-gray-100 hover:bg-gray-200"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  );
-                }
-              } catch {}
-              return (
-                <>
-                  <button
-                    onClick={() => onNavigate('login')}
-                    className="px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-                  >
-                    {t('nav.login')}
-                  </button>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700">
+                  {user.first_name || user.username}
+                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded">Supervisor</span>}
+                </span>
+                <button
+                  onClick={() => { logout(); onNavigate('home'); }}
+                  className="px-3 py-2 ml-2 rounded-md text-sm bg-gray-100 hover:bg-gray-200"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => onNavigate('login')}
+                  className="px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  {t('nav.login')}
+                </button>
 
-                  <button
-                    onClick={() => onNavigate('register')}
-                    className="px-3 py-2 ml-2 rounded-md text-sm bg-teal-600 text-white hover:bg-teal-700"
-                  >
-                    {t('nav.register')}
-                  </button>
-                </>
-              );
-            })()}
+                <button
+                  onClick={() => onNavigate('register')}
+                  className="px-3 py-2 ml-2 rounded-md text-sm bg-teal-600 text-white hover:bg-teal-700"
+                >
+                  {t('nav.register')}
+                </button>
+              </>
+            )}
 
             {/* Language switch (moved out of resources container to avoid overlap) */}
             <div className="ml-4">
@@ -319,6 +310,37 @@ export default function Navbar({ onNavigate, currentSection }: NavbarProps) {
             >
               QI Change Packages
             </button>
+
+            <div className="border-t border-gray-100 my-2"></div>
+            {user ? (
+              <>
+                <div className="px-3 py-2 text-sm text-gray-600">
+                  Logged in as {user.first_name || user.username}
+                  {user.is_staff && <span className="ml-1 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded">Supervisor</span>}
+                </div>
+                <button
+                  onClick={() => { logout(); onNavigate('home'); setIsOpen(false); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { onNavigate('login'); setIsOpen(false); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  {t('nav.login')}
+                </button>
+                <button
+                  onClick={() => { onNavigate('register'); setIsOpen(false); }}
+                  className="block w-full text-left px-3 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded-lg"
+                >
+                  {t('nav.register')}
+                </button>
+              </>
+            )}
 
           </div>
         </div>
